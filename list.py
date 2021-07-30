@@ -16,14 +16,14 @@ class Item(Generic[T]):
         if self.next is not None:
             self.next.prev = self.prev
 
-    def after(self, item: 'Item'[T]) -> None:
+    def after(self, item: 'Item[T]') -> None:
         if self.next is not None:
             self.next.prev = item
         item.prev = self
         item.next = self.next
         self.next = item
 
-    def before(self, item: 'Item'[T]) -> None:
+    def before(self, item: 'Item[T]') -> None:
         if self.prev is not None:
             self.prev.next = item
         item.prev = self.prev

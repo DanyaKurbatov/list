@@ -1,4 +1,4 @@
-# You can check this file using:
+# You can check this file:
 > mypy list.py
 
 <p>and</p>
