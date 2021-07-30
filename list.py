@@ -1,4 +1,4 @@
-from typing import TypeVar, Generic
+from typing import TypeVar, Generic, Union, Any
 
 T = TypeVar('T')
 
@@ -6,8 +6,8 @@ T = TypeVar('T')
 class Item(Generic[T]):
 
     def __init__(self, data: T):
-        self.prev = None
-        self.next = None
+        self.prev: Union[Item[T], None] = None
+        self.next: Union[Item[T], None] = None
         self.data = data
 
     def delete(self) -> None:
@@ -16,14 +16,14 @@ class Item(Generic[T]):
         if self.next is not None:
             self.next.prev = self.prev
 
-    def after(self, item: T) -> None:
+    def after(self, item: 'Item'[T]) -> None:
         if self.next is not None:
             self.next.prev = item
         item.prev = self
         item.next = self.next
         self.next = item
 
-    def before(self, item: T) -> None:
+    def before(self, item: 'Item'[T]) -> None:
         if self.prev is not None:
             self.prev.next = item
         item.prev = self.prev
@@ -33,9 +33,9 @@ class Item(Generic[T]):
 
 class MyList(Generic[T]):
 
-    def __init__(self, iterable=None) -> None:
-        self.head = None
-        self.tail = None
+    def __init__(self, iterable: Any = None) -> None:
+        self.head: Union[Item[T], None] = None
+        self.tail: Union[Item[T], None] = None
         if iterable is not None:
             for i in iterable:
                 self.append(i)
@@ -48,7 +48,7 @@ class MyList(Generic[T]):
             self.head = Item(data)
             self.tail = self.head
 
-    def prepend(self, data: T):
+    def prepend(self, data: T) -> None:
         if self.head is not None:
             self.head.before(Item(data))
             self.head = self.head.prev
@@ -56,7 +56,7 @@ class MyList(Generic[T]):
             self.tail = Item(data)
             self.head = self.tail
 
-    def insert(self, index, data: T) -> None:
+    def insert(self, index: int, data: T) -> None:
         index = self.__check(index)
         counter = 0
         i = self.head
@@ -70,13 +70,13 @@ class MyList(Generic[T]):
             counter += 1
         raise IndexError('list index out of range')
 
-    def __check(self, index) -> int:
+    def __check(self, index: int) -> int:
         assert isinstance(index, int)
         if index < 0:
             index = len(self) + index
         return index
 
-    def __enumerate(self) -> list:
+    def __enumerate(self) -> Any:
         counter = 0
         i = self.head
         while i is not None:
@@ -84,19 +84,19 @@ class MyList(Generic[T]):
             i = i.next
             counter += 1
 
-    def __iter__(self):
+    def __iter__(self) -> Any:
         i = self.head
         while i is not None:
             yield i.data
             i = i.next
 
-    def __reversed__(self):
+    def __reversed__(self) -> Any:
         i = self.tail
         while i is not None:
             yield i.data
             i = i.prev
 
-    def __contains__(self, data: T):
+    def __contains__(self, data: T) -> bool:
         for i in self:
             if i == data:
                 return True
@@ -108,7 +108,7 @@ class MyList(Generic[T]):
             counter += 1
         return counter
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int) -> Any:
         if isinstance(index, slice):
             if index.start is None:
                 start = 0
@@ -136,7 +136,7 @@ class MyList(Generic[T]):
                     return i.data
             raise IndexError('list index out of range')
 
-    def __setitem__(self, index, value):
+    def __setitem__(self, index: int, value: int) -> None:
         index = self.__check(index)
         for n, i in self.__enumerate():
             if n == index:
@@ -144,7 +144,7 @@ class MyList(Generic[T]):
                 return
         raise IndexError('list assignment index out of range')
 
-    def __delitem__(self, index) -> None:
+    def __delitem__(self, index: int) -> None:
         index = self.__check(index)
         for n, i in self.__enumerate():
             if n == index:
@@ -156,7 +156,7 @@ class MyList(Generic[T]):
                 return
         raise IndexError('list assignment index out of range')
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return ', '.join(map(str, self))
 
 
